@@ -89,7 +89,7 @@ def perform_regression_rating(aggregated_genre_df, umbrella_genre):
     ]
     genre_data[features_to_scale] = scaler.fit_transform(genre_data[features_to_scale])
 
-    formula = "Q('Inf adj movie box office revenue') ~ " + \
+    formula = "Q('averageRating') ~ " + \
               " + ".join([f"Q('{col}')" for col in genre_data.columns if col != 'averageRating'])
 
 
