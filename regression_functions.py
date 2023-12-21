@@ -37,14 +37,14 @@ def perform_regression(aggregated_genre_df, umbrella_genre, dep_var):
     genre_data = pd.get_dummies(genre_data, columns=['Month',], prefix='Month',dtype=int)
     genre_data = genre_data.drop('Month_1.0', axis=1)
 
-    # minmax normalization for features and target
+    """# minmax normalization for features and target
     scaler = MinMaxScaler()
     features_to_scale = [
         'Movie runtime', 'Female Percentage',
         'Number of ethnicities', 'Number of languages', 'Unemployment',
         dep_var, 'Typecasting', 'Actor Popularity'
     ]
-    genre_data[features_to_scale] = scaler.fit_transform(genre_data[features_to_scale])
+    genre_data[features_to_scale] = scaler.fit_transform(genre_data[features_to_scale])"""
 
     formula = f"Q('{dep_var}') ~ " + \
               " + ".join([f"Q('{col}')" for col in genre_data.columns if col != dep_var])
@@ -173,17 +173,18 @@ def interactive_correlation_matrix(aggregated_genre_df, desired_dep_variables, i
 
     return fig
 
-def interactive_residuals_scatterplot(genre_data, dep_var, line=False):
+def interactive_residuals_scatterplot(regression_data, dep_var, indep_var, line=False):
     """
     Generates an interactive Plotly scatter plot of residuals for each feature in the dataset.
 
     Parameters:
-    genre_data (pd.DataFrame): [Description]
-    dep_var (str): [Description]
-    line (bool): [Description, defaults to False]
+    regression_data (pd.DataFrame): data used for the actual regressions
+    dep_var (str): dependent variable on which we want to study the effect
+    indep_var (str): independent variable which effect we want to study
+    line (bool): toggle the line going through the mean of the residuals
 
     Returns:
-    plotly.graph_objs._figure.Figure: [Description]
+    plotly.graph_objs._figure.Figure: figure of the effects we want to plot
     """
     X_columns = genre_data.drop(columns=[dep_var]).columns
     X = genre_data.drop(columns=[dep_var]).values
@@ -253,6 +254,93 @@ def interactive_residuals_scatterplot(genre_data, dep_var, line=False):
         }],
         title=f"Effect of Feature on {dep_var}",
         xaxis_title="Feature (residualized)",
+        yaxis_title=f"{dep_var} (residualized)"
+    )
+
+    return fig
+
+def interactive_residuals_scatterplot_2(regression_data, dep_var, indep_var, desired_genres, line=False):
+    """
+    Generates an interactive Plotly scatter plot of residuals for each feature in the dataset.
+
+    Parameters:
+    regression_data (pd.DataFrame): data used for the actual regressions
+    dep_var (str): dependent variable on which we want to study the effect
+    indep_var (str): independent variable which effect we want to study
+    desired_genres (list(str)): list of desired genres we want to see the effect on
+    line (bool): toggle the line going through the mean of the residuals
+
+    Returns:
+    plotly.graph_objs._figure.Figure: figure of the effects we want to plot
+    """
+    indep_var_col = list(regression_data.drop(columns=[dep_var]).columns).index(indep_var)
+
+    fig = go.Figure()
+
+    for genre in desired_genres:
+        X = regression_data.loc[regression_data['Umbrella Genre'] == genre].drop([dep_var, 'Umbrella Genre'], axis=1).values
+        y = regression_data.loc[regression_data['Umbrella Genre'] == genre][dep_var].values
+        partial_model = sm.OLS(X[:, indep_var_col], np.delete(X, indep_var_col, axis=1)).fit()
+        residual_X = X[:, indep_var_col] - partial_model.predict(np.delete(X, indep_var_col, axis=1))
+
+        partial_model_y = sm.OLS(y, np.delete(X, indep_var_col, axis=1)).fit()
+        residual_y = y - partial_model_y.predict(np.delete(X, indep_var_col, axis=1))
+
+        # Add the scatter plot for residuals
+        fig.add_trace(go.Scatter(
+            x=residual_X, 
+            y=residual_y, 
+            mode='markers', 
+            name=f'Feature {indep_var}',
+            visible=(genre == 'Drama')  # Only the first scatter plot is visible
+        ))
+
+        if line:
+            # Fit a regression line through the scatter plot
+            line_params = np.polyfit(residual_X, residual_y, 1)
+            line_x = np.linspace(min(residual_X), max(residual_X), 100)
+            line_y = np.polyval(line_params, line_x)
+
+            # Add the regression line
+            fig.add_trace(go.Scatter(
+                x=line_x, 
+                y=line_y, 
+                mode='lines', 
+                name='Regression Line',
+                visible=(genre == 'Drama'),  # Only the first regression line is visible
+                line=dict(color='red')
+            ))
+
+    # Create dropdown buttons for feature selection
+    buttons = []
+    for i, genre in enumerate(desired_genres):
+        visibility = [False] * (len(desired_genres) * (2 if line else 1))  # Initialize all to false
+        visibility[i * (2 if line else 1)] = True  # Toggle scatter plot
+        if line:
+            visibility[i * 2 + 1] = True  # Toggle regression line
+
+        button = dict(
+            label=f'Genre {genre}',
+            method='update',
+            args=[{'visible': visibility},
+                  {'title': f'Effect of Feature {indep_var} on {dep_var} in the genre {genre}'}]
+        )
+        buttons.append(button)
+
+    # Update layout to add dropdown
+    fig.update_layout(
+        updatemenus=[{
+            'buttons': buttons,
+            'direction': 'down',
+            'showactive': True,
+            'x': 1,  # x = 0.5 positions the button in the center of the graph horizontally
+            'y': 1.2,  # y > 1 positions the button above the top of the graph
+            'xanchor': 'center',  # 'center' ensures that the middle of the button aligns with x position
+            'yanchor': 'top'  # 'top' ensures the button aligns above the graph based on the y position
+
+        }],
+        title=f"Effect of Feature {indep_var} on {dep_var}",
+        xaxis_title=f"Feature {indep_var} (residualized)",
         yaxis_title=f"{dep_var} (residualized)"
     )
 
