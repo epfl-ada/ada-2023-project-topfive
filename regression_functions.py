@@ -173,6 +173,43 @@ def interactive_correlation_matrix(aggregated_genre_df, desired_dep_variables, i
 
     return fig
 
+def interactive_scatterplot(genre_data, var_x, var_y, desired_genres):
+    """
+    Generates an interactive Plotly scatter plot of one feature against another in the dataset.
+
+    Parameters:
+    genre_data (pd.DataFrame): data used for scatterplots (aggregated_genre_df), needs to have genres within
+    var_x (str): variable on x-axis
+    var_y (str): variable on y-axis
+    desired_genres (list(str)): list of desired genres we want to see the effect on
+
+    Returns:
+    plotly.graph_objs._figure.Figure: figure we want to plot
+    """
+    fig = go.Figure()
+
+    for genre in desired_genres:
+        df_genre = genre_data.loc[genre]
+        X = df_genre[var_x]
+        Y = df_genre[var_y]
+        # Add the scatter plot
+        fig.add_trace(go.Scatter(
+            x=X, 
+            y=Y, 
+            mode='markers', 
+            name=f'Genre {genre}',
+            visible=True  # Only the first scatter plot is visible
+        ))
+
+    # Update layout to add dropdown
+    fig.update_layout(
+        title=f"Scatter plot of {var_x} vs {var_y}",
+        xaxis_title=f"{var_x}",
+        yaxis_title=f"{var_y}"
+    )
+
+    return fig
+
 def interactive_residuals_scatterplot(regression_data, dep_var, indep_var, desired_genres, line=False):
     """
     Generates an interactive Plotly scatter plot of residuals for each feature in the dataset.
