@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.preprocessing import MinMaxScaler
 import plotly.graph_objs as go
+import scipy.stats as stats
 
 def perform_regression(aggregated_genre_df, umbrella_genre, dep_var):
     """
@@ -37,22 +38,19 @@ def perform_regression(aggregated_genre_df, umbrella_genre, dep_var):
     genre_data = pd.get_dummies(genre_data, columns=['Month',], prefix='Month',dtype=int)
     genre_data = genre_data.drop('Month_1.0', axis=1)
 
-    """# minmax normalization for features and target
-    scaler = MinMaxScaler()
-    features_to_scale = [
-        'Movie runtime', 'Female Percentage',
-        'Number of ethnicities', 'Number of languages', 'Unemployment',
-        dep_var, 'Typecasting', 'Actor Popularity'
-    ]
-    genre_data[features_to_scale] = scaler.fit_transform(genre_data[features_to_scale])"""
-
     formula = f"Q('{dep_var}') ~ " + \
               " + ".join([f"Q('{col}')" for col in genre_data.columns if col != dep_var])
-
-
+                                                                    
     model = smf.ols(formula=formula, data=genre_data).fit()
-
-    return model,genre_data
+    
+    dfbetas = model.get_influence().dfbetas
+    outliers = np.abs(dfbetas).max(axis=1) > 1
+    
+    data_without_outliers = genre_data[~outliers]
+    
+    clean_model = smf.ols(formula=formula, data=data_without_outliers).fit()
+    
+    return clean_model,data_without_outliers
 #usage:
 # ols_model,genre_data = perform_regression_revenue(aggregated_genre_df, 'Action', dep_var)
 
@@ -210,6 +208,86 @@ def interactive_scatterplot(genre_data, var_x, var_y, desired_genres):
 
     return fig
 
+def interactive_barplot(genre_data, var_x, var_y, desired_genres):
+    """
+    Generates an interactive Plotly bar plot of one feature against another in the dataset.
+
+    Parameters:
+    genre_data (pd.DataFrame): data used for bar plots (aggregated_genre_df), needs to have genres within
+    var_x (str): variable on x-axis
+    var_y (str): variable on y-axis
+    desired_genres (list(str)): list of desired genres we want to see the effect on
+
+    Returns:
+    plotly.graph_objs._figure.Figure: figure we want to plot
+    """
+    fig = go.Figure()
+
+    for genre in desired_genres:
+        df_genre = genre_data.loc[genre_data['Umbrella Genre'] == genre]
+        X = df_genre[var_x]
+        Y = df_genre[var_y]
+        # Add the scatter plot
+        fig.add_trace(go.Bar(
+            x=X, 
+            y=Y, 
+            name=f'Genre {genre}',
+            visible=False  # Only the first scatter plot is visible
+        ))
+    
+    df_genre = genre_data.loc[genre_data['Umbrella Genre'].isin(desired_genres)]
+    X = df_genre[var_x]
+    Y = df_genre[var_y]
+    # Add the scatter plot
+    fig.add_trace(go.Bar(
+        x=X, 
+        y=Y,
+        name=f'Aggregate of desired genres',
+        visible=True  # Only the aggregate scatter plot is visible
+    ))
+    
+    buttons = []
+    for i, genre in enumerate(desired_genres):
+        visibility = [False] * (len(desired_genres) + 1) # Initialize all to false
+        visibility[i] = True  # Toggle scatter plot
+
+        button = dict(
+            label=f'Genre {genre}',
+            method='update',
+            args=[{'visible': visibility},
+                  {'title': f'test'}]
+        )
+        buttons.append(button)
+
+    button = dict(
+        label=f'Aggregate of genres',
+        method='update',
+        args=[{'visible': [False] * len(desired_genres) + [True]},
+              {'title': f'test'}]
+    )
+    buttons.append(button)
+    
+    
+    
+    # Update layout to add dropdown
+    fig.update_layout(
+        updatemenus=[{
+            'buttons': buttons,
+            'direction': 'down',
+            'showactive': True,
+            'x': 1,  # x = 0.5 positions the button in the center of the graph horizontally
+            'y': 1.2,  # y > 1 positions the button above the top of the graph
+            'xanchor': 'center',  # 'center' ensures that the middle of the button aligns with x position
+            'yanchor': 'top'  # 'top' ensures the button aligns above the graph based on the y position
+
+        }],
+        title=f"Bar plot of {var_x} vs {var_y}",
+        xaxis_title=f"{var_x}",
+        yaxis_title=f"{var_y}"
+    )
+
+    return fig
+
 def interactive_residuals_scatterplot(regression_data, dep_var, indep_var, desired_genres, line=False):
     """
     Generates an interactive Plotly scatter plot of residuals for each feature in the dataset.
@@ -224,23 +302,27 @@ def interactive_residuals_scatterplot(regression_data, dep_var, indep_var, desir
     Returns:
     plotly.graph_objs._figure.Figure: figure of the effects we want to plot
     """
-    indep_var_col = list(regression_data.drop(columns=[dep_var]).columns).index(indep_var)
-
     fig = go.Figure()
 
     for genre in desired_genres:
-        X = regression_data.loc[regression_data['Umbrella Genre'] == genre].drop([dep_var, 'Umbrella Genre'], axis=1).values
-        y = regression_data.loc[regression_data['Umbrella Genre'] == genre][dep_var].values
-        partial_model = sm.OLS(X[:, indep_var_col], np.delete(X, indep_var_col, axis=1)).fit()
-        residual_X = X[:, indep_var_col] - partial_model.predict(np.delete(X, indep_var_col, axis=1))
+        df_regr = regression_data.loc[regression_data['Umbrella Genre'] == genre]
+        
+        formula_residuals_x = f"Q('{indep_var}') ~ " + \
+              " + ".join([f"Q('{col}')" for col in df_regr.columns if col not in [indep_var, dep_var, 'Umbrella Genre']])
+    
+        formula_residuals_y = f"Q('{dep_var}') ~ " + \
+                  " + ".join([f"Q('{col}')" for col in df_regr.columns if col not in [indep_var, dep_var, 'Umbrella Genre']])
 
-        partial_model_y = sm.OLS(y, np.delete(X, indep_var_col, axis=1)).fit()
-        residual_y = y - partial_model_y.predict(np.delete(X, indep_var_col, axis=1))
+        partial_model = smf.ols(formula=formula_residuals_x, data=df_regr).fit()
+        df_regr['resid_x'] = df_regr[indep_var] - partial_model.predict(df_regr.drop(columns=[indep_var, dep_var, 'Umbrella Genre']))
+
+        partial_model_y = smf.ols(formula=formula_residuals_y, data=df_regr).fit()
+        df_regr['resid_y'] = df_regr[dep_var] - partial_model_y.predict(df_regr.drop(columns=[indep_var, dep_var, 'Umbrella Genre']))
 
         # Add the scatter plot for residuals
         fig.add_trace(go.Scatter(
-            x=residual_X, 
-            y=residual_y, 
+            x=df_regr['resid_x'], 
+            y=df_regr['resid_y'], 
             mode='markers', 
             name=f'Feature {indep_var}',
             visible=(genre == 'Drama')  # Only the first scatter plot is visible
@@ -248,8 +330,8 @@ def interactive_residuals_scatterplot(regression_data, dep_var, indep_var, desir
 
         if line:
             # Fit a regression line through the scatter plot
-            line_params = np.polyfit(residual_X, residual_y, 1)
-            line_x = np.linspace(min(residual_X), max(residual_X), 100)
+            line_params = np.polyfit(df_regr['resid_x'], df_regr['resid_y'], 1)
+            line_x = np.linspace(min(df_regr['resid_x']), max(df_regr['resid_x']), 100)
             line_y = np.polyval(line_params, line_x)
 
             # Add the regression line
@@ -294,5 +376,138 @@ def interactive_residuals_scatterplot(regression_data, dep_var, indep_var, desir
         xaxis_title=f"Feature {indep_var} (residualized)",
         yaxis_title=f"{dep_var} (residualized)"
     )
+    
+    return fig
+
+
+def interactive_average_vs_years(aggregated_genre_df, var_to_plot, year_begin, year_end, categories):
+    """
+    Creates an interactive Plotly graph displaying the average of a variable against years for different categories.
+
+    Parameters:
+    aggregated_genre_df (DataFrame): A DataFrame indexed by category (genre) with columns for the variables of interest.
+    var_to_plot (str): The variable to be plotted against years.
+    year_begin (int): The starting year for the analysis.
+    year_end (int): The ending year for the analysis.
+    categories (list of str): A list of categories (genres) for which the plot is to be created.
+
+    Returns:
+    plotly.graph_objs._figure.Figure: A Plotly Figure object containing the interactive graph.
+    """
+
+    fig = go.Figure()
+
+    for umbrella_genre in categories:
+        genre_data = aggregated_genre_df.loc[umbrella_genre]
+
+        # Filter data based on the specified year range using the 'Year' column
+        filtered_data = genre_data.loc[(genre_data['Year'] >= year_begin) & (genre_data['Year'] <= year_end)]
+
+        # Calculate the average of the variable to plot for each year
+        average_values = filtered_data.groupby('Year')[var_to_plot].mean()
+
+        scatter = go.Scatter(
+            x=average_values.index,
+            y=average_values.values,
+            mode='lines+markers',
+            name=umbrella_genre,
+            visible=False,
+        )
+
+        fig.add_trace(scatter)
+
+    # Update layout to add and move dropdown
+    fig.update_layout(
+        updatemenus=[
+            dict(
+                buttons=[
+                    dict(label=genre,
+                         method='update',
+                         args=[{'visible': [genre == g for g in categories]},
+                               {'title': f"Average {var_to_plot} vs Years for {genre}"}])
+                    for genre in categories
+                ],
+                direction="down",
+                showactive=True,
+                x=0.8,  # Adjust x position
+                y=1.25,  # Adjust y position
+                xanchor='center',
+                yanchor='top'
+            )
+        ],
+        title="Select a Genre to View its Average vs Years",
+        xaxis_title="Years",
+        yaxis_title=f"Average {var_to_plot}",
+    )
+
+    fig.data[0].visible = True
 
     return fig
+# Example usage: rf.interactive_average_vs_years(aggregated_genre_df, 'Female Percentage', 1940, 2010, desired_categories)
+
+def interactive_barplot_average_revenue(regression_data, var_to_plot, intervals, categories):
+    """
+    Creates an interactive Plotly bar plot displaying the average box office revenue for different intervals of a variable.
+
+    Parameters:
+    regression_df_revenue (DataFrame): DataFrame containing the data for analysis.
+    var_to_plot (str): The variable for which intervals are considered.
+    intervals (list): List of intervals to categorize the variable.
+    categories (list of str): A list of categories (genres) for which the plot is to be created.
+
+    Returns:
+    plotly.graph_objs._figure.Figure: A Plotly Figure object containing the interactive bar plot.
+    """
+
+    fig = go.Figure()
+
+    for category in categories:
+        # Filter data for the specified category
+        category_data = regression_data[regression_data['Umbrella Genre'] == category]
+
+        # Bin the variable into intervals
+        category_data['Intervals'] = pd.cut(category_data[var_to_plot], bins=intervals, labels=[f'{intervals[i]}-{intervals[i+1]}' for i in range(len(intervals)-1)])
+
+        # Calculate mean and 95% CI for each interval
+        result = category_data.groupby('Intervals')['Inf adj movie box office revenue'].agg(['mean', 'sem'])
+        ci = result['sem'] * stats.t.ppf((1 + 0.95) / 2, category_data.groupby('Intervals').size())
+
+        # Create error bar plot
+        bar = go.Bar(
+            x=result.index,
+            y=result['mean'],
+            error_y=dict(type='data', array=ci),
+            name=category,
+            visible=False,
+        )
+
+        fig.add_trace(bar)
+
+    # Update layout to add and move dropdown
+    fig.update_layout(
+        updatemenus=[
+            dict(
+                buttons=[
+                    dict(label=genre,
+                         method='update',
+                         args=[{'visible': [genre == g for g in categories]},
+                               {'title': f'Average Box Office Revenue for Different {var_to_plot} Intervals in {genre} Genre'}])
+                    for genre in categories
+                ],
+                direction="down",
+                showactive=True,
+                x=0.8,
+                y=1.25,
+                xanchor='center',
+                yanchor='top'
+            )
+        ],
+        title=f'Select a Genre to View its Average Box Office Revenue vs {var_to_plot} Intervals',
+        xaxis_title=f'{var_to_plot} Intervals',
+        yaxis_title='Average Box Office Revenue'
+    )
+
+    fig.data[0].visible = True
+
+    return fig
+# Example usage: rf.interactive_barplot_average_revenue(regression_df_revenue, 'Female Percentage', [0, 25, 50, 75, 100], desired_categories)
