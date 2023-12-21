@@ -8,7 +8,7 @@ from sklearn.preprocessing import MinMaxScaler
 import plotly.graph_objs as go
 import scipy.stats as stats
 
-def perform_regression(aggregated_genre_df, umbrella_genre, dep_var):
+def perform_regression(aggregated_genre_df, umbrella_genre, dep_var, selected_features):
     """
     Performs a regression of the desired columns of the DataFrame for a given umbrella genre on average inflation adjusted revenue
     
@@ -21,13 +21,19 @@ def perform_regression(aggregated_genre_df, umbrella_genre, dep_var):
     """
     # Extract the specific genre
     genre_data = aggregated_genre_df.loc[umbrella_genre]
-
+    
+    selected_columns = selected_features + [dep_var]
     # Selecting columns for regression
-    selected_columns = [
+    """selected_columns = [
         'Movie runtime', 'Month', 'Female Percentage',
         'Number of ethnicities', 'Number of languages', 'Unemployment',
         dep_var, 'Typecasting', 'Actor Popularity'
-    ]
+    ]"""
+    """selected_columns = [
+        'Movie runtime', 'Month', 'Female Percentage',
+        'Number of ethnicities', 'Number of languages', 'Unemployment',
+        dep_var, 'Actor Popularity'
+    ]"""
     
     genre_data = genre_data[selected_columns]
 
@@ -49,8 +55,9 @@ def perform_regression(aggregated_genre_df, umbrella_genre, dep_var):
     data_without_outliers = genre_data[~outliers]
     
     clean_model = smf.ols(formula=formula, data=data_without_outliers).fit()
-    
+
     return clean_model,data_without_outliers
+    #return model, genre_data
 #usage:
 # ols_model,genre_data = perform_regression_revenue(aggregated_genre_df, 'Action', dep_var)
 
