@@ -17,3 +17,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer varius diam fel
 Text
 
 <iframe src="plots/scatter_popularity_revenue.html" width="750" height="550" frameborder="0"> Movie Revenue Scatterplot of average Actor Popularity vs Inflation adjusted revenue by Umbrella Genre</iframe>
+
+## Last Test Graph (interactive)
+
+<iframe src="plots/unemployment_log_revenue_residual.html" width="750" height="550" frameborder="0"> Movie Revenue Scatterplot of average Actor Popularity vs Inflation adjusted revenue by Umbrella Genre</iframe>
