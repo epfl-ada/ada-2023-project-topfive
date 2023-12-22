@@ -17,7 +17,7 @@ And now...the plot thickens, and so does revenue ? – Let the data tell the tal
 
 ## Explain choice of Umbrella Genres, choice of 7 first ones etc (feature engineering etc)
 
-### Pie Chart with percentages
+<iframe src="plots/pie_chart.png" width="750" height="550" frameborder="0">Umbrella Genre Distribution</iframe>
 
 # Box Office Alchemy: Decoding Causality Across Revenue Drivers
 Movies make money for various reasons. In this story, we'll show you how several drivers affect a movie's box office revenues. Think of it like solving a puzzle. In our pursuit of understanding the intricate factors that contribute to a movie's box office success, we primarily employ multiple regression. This choice is not arbitrary but a strategic necessity, rooted in the principles of sound statistical analysis.
@@ -90,7 +90,7 @@ Now, we observe that revenue optimization typically occurs during periods of eco
 
 # Casting and Star Power
 
-## Are we on a roll? The impact of Actor Momentum (and Experience)
+## Are we on a roll? The impact of Actor Momentum
 In our cinematic odyssey, we are not merely deciphering the impact of colossal names gracing the marquee but also diving into the heartbeat of every ensemble — the supporting cast. Picture this: a few iconic actors, a sprinkle of emerging talent, some Hollywood veterans that hand out precious advice and perhaps an unsung hero or two. Together, they form the team of characters that breathe life into the narrative, but how to discover the optimal combination?
 
 To unravel the mysteries surrounding the impact of actors, both main and supporting, on a movie's prosperity, we introduce a novel metric — the Actor Momentum. This metric, a source of insight, gauges the pulse of an actor's career over the last 5 years, current year included. Why, you ask? For we seek not only the emerging talent, but also the nuanced intersection of experience and relevance in Hollywood's ever-evolving landscape.
@@ -105,19 +105,19 @@ We start by exploring historical graphs describing tendencies in actor momentum 
 
 In our inaugural expedition, where data and cinema converge, we cast our gaze upon the intersection of Actor Momentum and Box Office revenue. A visual symphony unfolds, revealing insights into the heartbeat of Hollywood's financial intricacies. Behold, the scatterplot — a canvas where Actor Momentum meets the towering (inflation-adjusted) revenues of our beloved films. The largest revenues seem to trace a skewed bell curve, gracefully peaking around 50 movies on average in the last 5 years. 
 
-<iframe src="plots/scatter_popularity_revenue.html" width="750" height="550" frameborder="0"> Movie Revenue Scatterplot of average Actor Momentum vs Inflation adjusted revenue by Umbrella Genre</iframe>
+<iframe src="plots/scatter_momentum_revenue.html" width="750" height="550" frameborder="0"> Movie Revenue Scatterplot of average Actor Momentum vs Inflation adjusted revenue by Umbrella Genre</iframe>
 
 However, we can clearly notice that this scatterplot goes against Gauss-Markov assumptions for all our movie genres and thus, Actor Momentum should not be used as a regressor. However, we can still interpret the results for each genre visually.
 
 When taking a glimpse towards the correlation matrix above, we can notice that Actor Momentum and Inflation Adjusted Revenue have mostly very light correlation, culminating at 0.12, for Comedy. This seems to be in line with the scatterplots above, as Comedy, SF and Fantasy as well as Thriller genres have slightly more linear-looking relationships (or at least less flat ones) with the movie revenue.
 
-<iframe src="plots/scatter_popularity_log_revenue.html" width="750" height="550" frameborder="0"> Movie Revenue Scatterplot of average Actor Momentum vs logarithmic Inflation adjusted revenue by Umbrella Genre</iframe>
+<iframe src="plots/scatter_momentum_log_revenue.html" width="750" height="550" frameborder="0"> Movie Revenue Scatterplot of average Actor Momentum vs logarithmic Inflation adjusted revenue by Umbrella Genre</iframe>
 
 As mentioned in the regression part, we then decided to choose the logarithm of Inflation Adjusted Revenue as our movie success metric in order to account for the scale differences and the outliers, while keeping an interpretable variable. When examining the scatterplot of the logarithmic revenue, it looks already better (w.r.t. linear regression), compared to the regular plot.
 
 When plotting the residual regression to visualize the tendency within the residuals, we do not learn anything new: the mean of the residuals remains constantly at 0.
 
-<iframe src="plots/popularity_log_revenue_residual.html" width="750" height="550" frameborder="0">"Partialed out" regression of log(Inflation adjusted revenue) on Actor Momentum by Umbrella Genre</iframe>
+<iframe src="plots/momentum_log_revenue_residual.html" width="750" height="550" frameborder="0">"Partialed out" regression of log(Inflation adjusted revenue) on Actor Momentum by Umbrella Genre</iframe>
 
 However, no matter whether we work in the linear or the logarithmic space, the regression results remain quite similar. The coefficient of Actor Momentum always has p-values above 5%, our significance level, no matter the genre. We can thus state that at that level, Actor Momentum is not a significant factor when predicting movie revenue, at least not in the context of a linear regression.
 
@@ -125,12 +125,12 @@ Even when plotting the residual regression between Actor Momentum and logarithmi
 
 The solution we committed to was grouping the movies by Actor Momentum for each genre, taking the mean for each group, then choosing the group with the maximal mean, in line with the tendency of the graphs of peaking at one point. In order to have a relevant grouping, we decided to round our momentums to the nearest multiple of 5, as this seemed graphically in line with the frequencies of observations.
 
-<iframe src="plots/interactive_scatter_popularity_revenue.html" width="750" height="550" frameborder="0">Scatter plot of Actor Momentum vs Adjusted Revenue</iframe>
-<iframe src="plots/interactive_scatter_popularity_count.html" width="750" height="550" frameborder="0">Scatter plot of Actor Momentum vs Movie Count</iframe>
+<iframe src="plots/interactive_scatter_momentum_revenue.html" width="750" height="550" frameborder="0">Scatter plot of Actor Momentum vs Adjusted Revenue</iframe>
+<iframe src="plots/interactive_scatter_momentum_count.html" width="750" height="550" frameborder="0">Scatter plot of Actor Momentum vs Movie Count</iframe>
 
 However, one should be careful, as momentum ranges with fewer movies are more affected by outliers. For this reason, we decided to multiply each average box office value by the amount of movies in each group, to have representative data with more robustness against outliers. The results can be seen below.
 
-<iframe src="plots/interactive_scatter_popularity_BOxMC.html" width="750" height="550" frameborder="0">Scatter plot of Actor Momentum vs (Adjusted Revenue * Movie Count)</iframe>
+<iframe src="plots/interactive_scatter_momentum_BOxMC.html" width="750" height="550" frameborder="0">Scatter plot of Actor Momentum vs (Adjusted Revenue * Movie Count)</iframe>
 
 For the majority of genres, this golden equilibrium point materializes at the threshold of 55, where the seasoned veterans and the rising stars converge in a harmonious dance. Yet, the realms of SF and Fantasy stand out at 40 and the realm of Thriller resonates at 50, as the two only different categories.
 
