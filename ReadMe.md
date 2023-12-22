@@ -70,11 +70,6 @@ Concentrate on enhancing the textual content and honing the visual elements. Pre
 - **Maxim**: Examining the effects of a film's release timing during economic downturns and the impact of movie language distribution.
 - **Tuomas**: Dedicated to evaluating the the implications of title length and sentiment.
 
-
-## Questions for TAs
-- We are considering employing the average IMDb rating as a supplementary metric to corroborate the strength of our analysis; would you regard this as a prudent approach?
-- Is it valid to examine how plot sentiment influences box office returns across different genres and determine the most favorable type of plot sentiment for each category?
-
 ## Final Work Distribution
 
 - **Alexander**: Worked on getting the data story website working, fixed template to match desired theming
