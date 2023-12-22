@@ -1,5 +1,7 @@
 # Drivers of Box Office Success Across Movie Categories
 
+The wonderful story, Navigating Through Genres: Uncovering the Key Factors Behind Box Office Revenue throughout Movie Categories, can be found [here](https://alexander-schaller.github.io/ada-2023-project-topfive/data-story/).
+
 ## Abstract  
 
 This research endeavor is focused on exploring and identifying the primary determinants that influence a movie's financial success at the box office across different cinematic categories. Driven by the assumption that elements such as the timing of a movie's release, the popularity of its actors or the macro-economic climate (among others) have a unique impact on revenue generation within specific genres, our goal is to thoroughly analyze these aspects in a modular fashion. By doing so, we will provide a detailed assessment of the extent to which each factor plays a role in the commercial triumph or shortfall of films. Our methodical approach is designed to illuminate the most influential factors for each film genre and to determine whether these factors have a consistent effect across the board or if their influence is significantly different from one genre to another. The narrative we aspire to craft through this analysis aims to offer valuable insights that could potentially transform industry practices regarding the production and marketing strategies tailored to maximize box office revenue generation within targeted film categories.
@@ -73,4 +75,12 @@ Concentrate on enhancing the textual content and honing the visual elements. Pre
 ## Questions for TAs
 - We are considering employing the average IMDb rating as a supplementary metric to corroborate the strength of our analysis; would you regard this as a prudent approach?
 - Is it valid to examine how plot sentiment influences box office returns across different genres and determine the most favorable type of plot sentiment for each category?
+
+## Final Work Distribution
+
+- **Alexander**: Worked on getting the data story website working, fixed template to match desired theming
+- **Alp**: Analyzed the effects of diversity on movie success, produced regressions
+- **Lucie**: Worked on the final analysis of genres, wrote texts for data story
+- **Maxim**: Examined the effects of a film's release timing during economic downturns, produced interactive graphs for the website, wrote texts for data story
+- **Tuomas**: Refactored code, wrote texts for data story, produced regressions
 
