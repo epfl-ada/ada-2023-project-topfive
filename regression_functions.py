@@ -13,8 +13,8 @@ def perform_regression(aggregated_genre_df, umbrella_genre, dep_var, selected_fe
     Performs a regression of the desired columns of the DataFrame for a given umbrella genre on average inflation adjusted revenue
     
     Input:
-        aggregated_genre_df: pd.DataFrame: DataFRame with the desired date
-        umbrella_genre: str: desired genre
+        aggregated_genre_df (pd.DataFrame): DataFRame with the desired date
+        umbrella_genre (str): desired genre
         
     Output:
         (model, genre_data): tuple, with the fitted model and the subset of our DataFrame with scaled features
@@ -23,21 +23,9 @@ def perform_regression(aggregated_genre_df, umbrella_genre, dep_var, selected_fe
     genre_data = aggregated_genre_df.loc[umbrella_genre]
     
     selected_columns = selected_features + [dep_var]
-    # Selecting columns for regression
-    """selected_columns = [
-        'Movie runtime', 'Month', 'Female Percentage',
-        'Number of ethnicities', 'Number of languages', 'Unemployment',
-        dep_var, 'Typecasting', 'Actor Popularity'
-    ]"""
-    """selected_columns = [
-        'Movie runtime', 'Month', 'Female Percentage',
-        'Number of ethnicities', 'Number of languages', 'Unemployment',
-        dep_var, 'Actor Popularity'
-    ]"""
     
     genre_data = genre_data[selected_columns]
 
-    # Drop rows with missing values
     genre_data.dropna(subset=selected_columns, inplace=True)
 
     # One-hot encode the 'Month' column, removing January (our base column) to avoid multicollinearity in the regression
@@ -48,70 +36,20 @@ def perform_regression(aggregated_genre_df, umbrella_genre, dep_var, selected_fe
               " + ".join([f"Q('{col}')" for col in genre_data.columns if col != dep_var])
                                                                     
     model = smf.ols(formula=formula, data=genre_data).fit()
-    
+    """
     dfbetas = model.get_influence().dfbetas
     outliers = np.abs(dfbetas).max(axis=1) > 1
     
     data_without_outliers = genre_data[~outliers]
     
     clean_model = smf.ols(formula=formula, data=data_without_outliers).fit()
+    
+    return clean_model,data_without_outliers"""
+    
+    return model, genre_data
 
-    return clean_model,data_without_outliers
-    #return model, genre_data
 #usage:
 # ols_model,genre_data = perform_regression_revenue(aggregated_genre_df, 'Action', dep_var)
-
-def visualize_individual_effects(genre_data, dep_var, line=False):
-    """
-    Helper function to visualize individual effects of each column on the dependent variable, using residuals.
-
-    Input:
-        genre_data: pd.DataFrame: Input DataFrame containing both independent and dependent variables.
-        dep_var: str: The name of the column representing the dependent variable.
-
-    Output:
-        None
-    """
-    X_columns = genre_data.drop(columns=[dep_var]).columns
-    X = genre_data.drop(columns=[dep_var]).values
-    y = genre_data[dep_var].values
-
-    for i in range(0, X.shape[1]):
-        partial_model = sm.OLS(X[:, i], np.delete(X, i, axis=1)).fit()
-        residual_X = X[:, i] - partial_model.predict(np.delete(X, i, axis=1))
-
-        partial_model_y = sm.OLS(y, np.delete(X, i, axis=1)).fit()
-        residual_y = y - partial_model_y.predict(np.delete(X, i, axis=1))
-
-        # Scatter plot of the residuals
-        plt.figure(figsize=(6, 4))
-        plt.scatter(residual_X, residual_y)
-        plt.title(f'Effect of Feature {X_columns[i]}')
-        plt.xlabel(f'Feature {X_columns[i]} (residualized)')
-        plt.ylabel(f'Target {dep_var} (residualized)')
-        if line:
-            # Fit a linear regression line through the scatter plot
-            line_params = np.polyfit(residual_X, residual_y, 1)
-            line_x = np.linspace(min(residual_X), max(residual_X), 100)
-            line_y = np.polyval(line_params, line_x)
-            plt.plot(line_x, line_y, color='red', label='Regression Line')
-            plt.legend()
-        plt.show()
-
-def correlation_matrix(aggregated_genre_df, desired_dep_variables, indep_var, umbrella_genre):
-    genre_data = aggregated_genre_df.loc[umbrella_genre]
-    # include dependent variable as first one in the matrix
-    desired_columns = [indep_var] + desired_dep_variables
-    genre_data = genre_data[desired_columns]
-
-    # Drop rows with missing values
-    genre_data.dropna(subset=desired_columns, inplace=True)
-    
-    correlation_matrix = genre_data.corr()
-    
-    sns.heatmap(correlation_matrix, annot=True)
-    plt.title(f"Correlation matrix for {indep_var} and dependent variables for genre {umbrella_genre}")
-    plt.show()
 
 def interactive_correlation_matrix(aggregated_genre_df, desired_dep_variables, indep_var, categories):
 
@@ -119,10 +57,10 @@ def interactive_correlation_matrix(aggregated_genre_df, desired_dep_variables, i
     Creates an interactive Plotly heatmap displaying the correlation matrix for different categories.
     
     Parameters:
-    aggregated_genre_df (DataFrame): A DataFrame indexed by category (genre) with columns for the variables of interest.
-    desired_dep_variables (list of str): A list of strings representing the dependent variables to be included in the correlation matrix.
+    aggregated_genre_df (DataFrame): A DataFrame indexed by genre with columns for the variables of interest.
+    desired_dep_variables (list[str]): A list of strings representing the dependent variables to be included in the correlation matrix.
     indep_var (str): The independent variable whose correlation with the dependent variables is to be analyzed.
-    categories (list of str): A list of categories (genres) for which the correlation matrix is to be created.
+    categories (list[str]): A list of categories (genres) for which the correlation matrix is to be created.
 
     Returns:
     plotly.graph_objs._figure.Figure: A Plotly Figure object containing the interactive heatmaps.
@@ -146,8 +84,8 @@ def interactive_correlation_matrix(aggregated_genre_df, desired_dep_variables, i
                 colorscale='magma',
                 visible=False,
                 name=umbrella_genre,
-                text=correlation_matrix.values.round(2),  # Display rounded correlation values
-                texttemplate="%{text}",  # Use texttemplate for displaying text values
+                text=correlation_matrix.values.round(2),
+                texttemplate="%{text}",
             )
 
         fig.add_trace(heatmap)
@@ -165,8 +103,8 @@ def interactive_correlation_matrix(aggregated_genre_df, desired_dep_variables, i
                 ],
                 direction="down",
                 showactive=True,
-                x=0.8,  # Adjust x position
-                y=1.25,  # Adjust y position
+                x=0.8,
+                y=1.25,
                 xanchor='center',
                 yanchor='top'
             )
@@ -183,13 +121,13 @@ def interactive_scatterplot(genre_data, var_x, var_y, desired_genres):
     Generates an interactive Plotly scatter plot of one feature against another in the dataset.
 
     Parameters:
-    genre_data (pd.DataFrame): data used for scatterplots (aggregated_genre_df), needs to have genres within
+    genre_data (pd.DataFrame): data used for scatter plots (aggregated_genre_df), needs to have genres as index
     var_x (str): variable on x-axis
     var_y (str): variable on y-axis
-    desired_genres (list(str)): list of desired genres we want to see the effect on
+    desired_genres (list[str]): list of desired genres we want to see the effect on
 
     Returns:
-    plotly.graph_objs._figure.Figure: figure we want to plot
+    plotly.graph_objs._figure.Figure: A Plotly Figure object containing the scatter plot
     """
     fig = go.Figure()
 
@@ -197,16 +135,15 @@ def interactive_scatterplot(genre_data, var_x, var_y, desired_genres):
         df_genre = genre_data.loc[genre]
         X = df_genre[var_x]
         Y = df_genre[var_y]
-        # Add the scatter plot
+        
         fig.add_trace(go.Scatter(
             x=X, 
             y=Y, 
             mode='markers', 
             name=f'Genre {genre}',
-            visible=True  # Only the first scatter plot is visible
+            visible=True  # Only the first one is visible
         ))
 
-    # Update layout to add dropdown
     fig.update_layout(
         title=f"Scatter plot of {var_x} vs {var_y}",
         xaxis_title=f"{var_x}",
@@ -220,13 +157,13 @@ def interactive_barplot(genre_data, var_x, var_y, desired_genres):
     Generates an interactive Plotly bar plot of one feature against another in the dataset.
 
     Parameters:
-    genre_data (pd.DataFrame): data used for bar plots (aggregated_genre_df), needs to have genres within
+    genre_data (pd.DataFrame): data used for bar plots (aggregated_genre_df), needs to have genres as index
     var_x (str): variable on x-axis
     var_y (str): variable on y-axis
     desired_genres (list(str)): list of desired genres we want to see the effect on
 
     Returns:
-    plotly.graph_objs._figure.Figure: figure we want to plot
+    plotly.graph_objs._figure.Figure: A Plotly Figure object containing the bar plot
     """
     fig = go.Figure()
 
@@ -234,12 +171,12 @@ def interactive_barplot(genre_data, var_x, var_y, desired_genres):
         df_genre = genre_data.loc[genre_data['Umbrella Genre'] == genre]
         X = df_genre[var_x]
         Y = df_genre[var_y]
-        # Add the scatter plot
+
         fig.add_trace(go.Bar(
             x=X, 
             y=Y, 
             name=f'Genre {genre}',
-            visible=False  # Only the first scatter plot is visible
+            visible=False  # Only the first one is visible
         ))
     
     df_genre = genre_data.loc[genre_data['Umbrella Genre'].isin(desired_genres)]
@@ -250,13 +187,15 @@ def interactive_barplot(genre_data, var_x, var_y, desired_genres):
         x=X, 
         y=Y,
         name=f'Aggregate of desired genres',
-        visible=True  # Only the aggregate scatter plot is visible
+        visible=True  # Only the aggregate bar plot is visible
     ))
     
     buttons = []
     for i, genre in enumerate(desired_genres):
-        visibility = [False] * (len(desired_genres) + 1) # Initialize all to false
-        visibility[i] = True  # Toggle scatter plot
+        # Initialize all to false
+        visibility = [False] * (len(desired_genres) + 1)
+        # Toggle scatter plot for each i
+        visibility[i] = True
 
         button = dict(
             label=f'Genre {genre}',
@@ -282,10 +221,10 @@ def interactive_barplot(genre_data, var_x, var_y, desired_genres):
             'buttons': buttons,
             'direction': 'down',
             'showactive': True,
-            'x': 1,  # x = 0.5 positions the button in the center of the graph horizontally
-            'y': 1.2,  # y > 1 positions the button above the top of the graph
-            'xanchor': 'center',  # 'center' ensures that the middle of the button aligns with x position
-            'yanchor': 'top'  # 'top' ensures the button aligns above the graph based on the y position
+            'x': 1,
+            'y': 1.2,
+            'xanchor': 'center',
+            'yanchor': 'top'
 
         }],
         title=f"Bar plot of {var_x} vs {var_y}",
@@ -297,17 +236,17 @@ def interactive_barplot(genre_data, var_x, var_y, desired_genres):
 
 def interactive_residuals_scatterplot(regression_data, dep_var, indep_var, desired_genres, line=False):
     """
-    Generates an interactive Plotly scatter plot of residuals for each feature in the dataset.
+    Generates an interactive Plotly scatter plot of residuals for a chosen feature in the dataset.
 
     Parameters:
-    regression_data (pd.DataFrame): data used for the actual regressions
+    regression_data (pd.DataFrame): data used for the residual regressions
     dep_var (str): dependent variable on which we want to study the effect
     indep_var (str): independent variable which effect we want to study
     desired_genres (list(str)): list of desired genres we want to see the effect on
     line (bool): toggle the line going through the mean of the residuals
 
     Returns:
-    plotly.graph_objs._figure.Figure: figure of the effects we want to plot
+    plotly.graph_objs._figure.Figure: A Plotly Figure containing the scatter plot of the residuals (and potentially the line)
     """
     fig = go.Figure()
 
@@ -332,7 +271,7 @@ def interactive_residuals_scatterplot(regression_data, dep_var, indep_var, desir
             y=df_regr['resid_y'], 
             mode='markers', 
             name=f'Feature {indep_var}',
-            visible=(genre == 'Drama')  # Only the first scatter plot is visible
+            visible=(genre == 'Drama')  # Only the first one is visible
         ))
 
         if line:
@@ -347,17 +286,20 @@ def interactive_residuals_scatterplot(regression_data, dep_var, indep_var, desir
                 y=line_y, 
                 mode='lines', 
                 name='Regression Line',
-                visible=(genre == 'Drama'),  # Only the first regression line is visible
+                visible=(genre == 'Drama'),
                 line=dict(color='red')
             ))
 
-    # Create dropdown buttons for feature selection
+    # Dropdown buttons for feature selection
     buttons = []
     for i, genre in enumerate(desired_genres):
-        visibility = [False] * (len(desired_genres) * (2 if line else 1))  # Initialize all to false
-        visibility[i * (2 if line else 1)] = True  # Toggle scatter plot
+        # Initialize all to false
+        visibility = [False] * (len(desired_genres) * (2 if line else 1))
+        # Toggle scatter plot
+        visibility[i * (2 if line else 1)] = True  
         if line:
-            visibility[i * 2 + 1] = True  # Toggle regression line
+            # Toggle regression line
+            visibility[i * 2 + 1] = True
 
         button = dict(
             label=f'Genre {genre}',
@@ -373,10 +315,10 @@ def interactive_residuals_scatterplot(regression_data, dep_var, indep_var, desir
             'buttons': buttons,
             'direction': 'down',
             'showactive': True,
-            'x': 1,  # x = 0.5 positions the button in the center of the graph horizontally
-            'y': 1.2,  # y > 1 positions the button above the top of the graph
-            'xanchor': 'center',  # 'center' ensures that the middle of the button aligns with x position
-            'yanchor': 'top'  # 'top' ensures the button aligns above the graph based on the y position
+            'x': 1,
+            'y': 1.2,
+            'xanchor': 'center',
+            'yanchor': 'top'
 
         }],
         title=f"Effect of Feature {indep_var} on {dep_var}",
@@ -410,7 +352,6 @@ def interactive_average_vs_years(aggregated_genre_df, var_to_plot, year_begin, y
         # Filter data based on the specified year range using the 'Year' column
         filtered_data = genre_data.loc[(genre_data['Year'] >= year_begin) & (genre_data['Year'] <= year_end)]
 
-        # Calculate the average of the variable to plot for each year
         average_values = filtered_data.groupby('Year')[var_to_plot].mean()
 
         scatter = go.Scatter(
@@ -436,8 +377,8 @@ def interactive_average_vs_years(aggregated_genre_df, var_to_plot, year_begin, y
                 ],
                 direction="down",
                 showactive=True,
-                x=0.8,  # Adjust x position
-                y=1.25,  # Adjust y position
+                x=0.8,
+                y=1.25,
                 xanchor='center',
                 yanchor='top'
             )
@@ -454,25 +395,24 @@ def interactive_average_vs_years(aggregated_genre_df, var_to_plot, year_begin, y
 
 def interactive_barplot_average_revenue(regression_data, var_to_plot, intervals, categories):
     """
-    Creates an interactive Plotly bar plot displaying the average box office revenue for different intervals of a variable.
+    Creates an interactive Plotly bar plot displaying the average box office revenue for different intervals of a variable
 
     Parameters:
-    regression_df_revenue (DataFrame): DataFrame containing the data for analysis.
-    var_to_plot (str): The variable for which intervals are considered.
-    intervals (list): List of intervals to categorize the variable.
-    categories (list of str): A list of categories (genres) for which the plot is to be created.
+    regression_df_revenue (DataFrame): DataFrame containing the data for analysis
+    var_to_plot (str): The variable for which intervals are considered
+    intervals (list): List of intervals to categorize the variable
+    categories (list of str): A list of categories (genres) for which the plot is to be created
 
     Returns:
-    plotly.graph_objs._figure.Figure: A Plotly Figure object containing the interactive bar plot.
+    plotly.graph_objs._figure.Figure: A Plotly Figure object containing the interactive bar plot
     """
 
     fig = go.Figure()
 
     for category in categories:
-        # Filter data for the specified category
         category_data = regression_data[regression_data['Umbrella Genre'] == category]
 
-        # Bin the variable into intervals
+        # Bin variable into intervals
         category_data['Intervals'] = pd.cut(category_data[var_to_plot], bins=intervals, labels=[f'{intervals[i]}-{intervals[i+1]}' for i in range(len(intervals)-1)])
 
         # Calculate mean and 95% CI for each interval
@@ -521,19 +461,20 @@ def interactive_barplot_average_revenue(regression_data, var_to_plot, intervals,
 
 def interactive_Histogram2dContour(regression_data, dep_var, indep_var, desired_genres):
     """
-    Creates an interactive graph with dropdown buttons to switch between genres.
+    Creates an interactive Histogram2dContour graph with dropdown buttons to switch between genres.
 
     Parameters:
     regression_data (DataFrame): The data containing the variables and genres.
     dep_var (str): The name of the dependent variable column.
     indep_var (str): The name of the independent variable column.
     desired_genres (list of str): A list of genres to filter the data and create plots for.
+    
+    Returns:
+    plotly.graph_objs._figure.Figure: A Plotly Figure object containing the interactive Histogram2dContour.
     """
 
-    # Initialize figure with subplots
     fig = go.Figure()
 
-    # Create a subplot for each genre and its marginal histograms
     for genre in desired_genres:
         genre_data = regression_data[regression_data['Umbrella Genre'] == genre]
 
@@ -559,7 +500,7 @@ def interactive_Histogram2dContour(regression_data, dep_var, indep_var, desired_
             yaxis='y'
         ))
 
-        # Marginal histogram for the x-axis variable
+        # Marginal histogram for the x-axis
         fig.add_trace(go.Histogram(
             x=genre_data[indep_var],
             name='X marginal',
@@ -567,7 +508,7 @@ def interactive_Histogram2dContour(regression_data, dep_var, indep_var, desired_
             yaxis='y2'
         ))
 
-        # Marginal histogram for the y-axis variable
+        # Marginal histogram for the y-axis
         fig.add_trace(go.Histogram(
             y=genre_data[dep_var],
             name='Y marginal',
@@ -575,7 +516,7 @@ def interactive_Histogram2dContour(regression_data, dep_var, indep_var, desired_
             xaxis='x2'
         ))
 
-    # Update layout for initial view
+    # Initial view
     fig.update_layout(
         xaxis=dict(domain=[0, 0.85], title=indep_var),
         yaxis=dict(domain=[0, 0.85], title=dep_var),
@@ -598,7 +539,7 @@ def interactive_Histogram2dContour(regression_data, dep_var, indep_var, desired_
             method='update'
         )
 
-        # Set the visibility for the genre's traces
+        # Visibility for the genre's traces
         for j in range(len(desired_genres)):
             if genre == desired_genres[j]:
                 for k in range(4):
@@ -606,11 +547,10 @@ def interactive_Histogram2dContour(regression_data, dep_var, indep_var, desired_
 
         buttons.append(button)
 
-    # Set the first genre visible
-    for i in range(4):  # Assuming 4 traces per genre (contour, scatter, x_hist, y_hist)
+    # 4 traces per genre (contour, scatter, x_hist, y_hist)
+    for i in range(4):  
         fig.data[i].visible = True
 
-    # Set initial titles and axis titles
     fig.update_layout(
         title=f"{desired_genres[0]} Genre: {indep_var} vs {dep_var}",
         updatemenus=[{
@@ -623,8 +563,119 @@ def interactive_Histogram2dContour(regression_data, dep_var, indep_var, desired_
         }]
     )
 
-    # Remove duplicate axis titles
     fig['layout']['annotations'] = []
 
-    # Show the figure
-    fig.show()
+    return fig
+
+def mean_confidence_interval(data, confidence=0.95):
+    """
+    Calculates the mean and confidence interval for an array of data.
+
+    Parameters:
+    data (array-like): The dataset to calculate the mean and CI for.
+    confidence (float): The confidence level to compute the CI at.
+
+    Returns:
+    tuple: A tuple containing the mean, lower bound of CI, and upper bound of CI.
+    """
+    a = 1.0 * np.array(data)
+    n = len(a)
+    m, se = np.mean(a), stats.sem(a)
+    h = se * stats.t.ppf((1 + confidence) / 2., n-1)
+    return m, m-h, m+h
+
+def create_interactive_boxplot(data_frame, dep_var, indep_var, desired_genres):
+    """
+    Creates an interactive box plot with dropdown buttons to switch between genres
+
+    Parameters:
+    data_frame (DataFrame): The data containing the variables and genres
+    dep_var (str): The name of the dependent variable column
+    indep_var (str): The name of the independent variable column
+    desired_genres (list of str): A list of genres to filter the data and create plots for
+    
+    Returns:
+    plotly.graph_objs._figure.Figure: A Plotly Figure object containing the interactive box plot
+    """
+
+    fig = go.Figure()
+
+    genre_traces = {}
+
+    for genre in desired_genres:
+        genre_data = data_frame[data_frame['Umbrella Genre'] == genre]
+        
+        # List comprehension to construct data for ci_df
+        ci_data = [{
+            indep_var: lang,
+            'Mean': mean,
+            'Low CI': low,
+            'High CI': high
+        } for lang, data in genre_data.groupby(indep_var)[dep_var] for mean, low, high in [mean_confidence_interval(data.values)]]
+        
+        ci_df = pd.DataFrame(ci_data)
+
+        box_fig = px.box(
+            genre_data, 
+            x=indep_var, 
+            y=dep_var,
+            labels={dep_var: 'Log Adjusted Revenue'},
+            title=f'Boxplot of {dep_var} by {indep_var}'
+        )
+
+        # Add boxplot traces to the figure
+        for trace in box_fig.data:
+            trace.visible = False
+            fig.add_trace(trace)
+
+        # Add CI scatter trace to the figure
+        ci_trace = go.Scatter(
+            x=ci_df[indep_var],
+            y=ci_df['Mean'],
+            mode='markers',
+            error_y=dict(
+                type='data',
+                symmetric=False,
+                array=ci_df['High CI'] - ci_df['Mean'],
+                arrayminus=ci_df['Mean'] - ci_df['Low CI']
+            ),
+            marker=dict(color='black', size=10),
+            name='Mean and 95% CI',
+            visible=False
+        )
+        fig.add_trace(ci_trace)
+        # Store the reference to the newly added traces
+        genre_traces[genre] = fig.data[-(len(box_fig.data) + 1):]
+
+    # Create dropdown buttons
+    buttons = []
+    for genre, traces in genre_traces.items():
+        button = dict(
+            label=genre,
+            method="update",
+            args=[{"visible": [t in traces for t in fig.data]},
+                  {"title": f"{genre} Genre: {dep_var} vs {indep_var}"}]
+        )
+        buttons.append(button)
+
+    fig.update_layout(
+        updatemenus=[{
+            'buttons': buttons,
+            'direction': 'down',
+            'active': 0,
+            'x': 1.15,
+            'xanchor': 'center',
+            'y': 1.25,
+            'yanchor': 'top'
+        }],
+        title=f'Boxplot of {dep_var} by {indep_var}',
+        xaxis_title=indep_var,
+        yaxis_title=dep_var,
+        template='plotly_white'
+    )
+
+    initial_genre = desired_genres[0]
+    for trace in genre_traces[initial_genre]:
+        trace.visible = True
+
+    return fig
