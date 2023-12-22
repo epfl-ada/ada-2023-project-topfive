@@ -11,11 +11,15 @@ From fast-paced action to heart-touching romances, each genre has its own recipe
 
 
 # Introduction
-We will be taking a dive in the backstage of the film industry's greatest hits through the lenses of their ratings and revenue! We will kick off with the spotlight on Release Strategies and Timing where we'll break down the effects of premiere timing, seasonality and overlapping release dates. Next on the reel, we'll be diving into Economic Factors and Box Office Resilience, where we'll explore how movies navigate the economic rollercoaster. Then, it'll be a tour into Casting and Star Power, where we’ll spill the beans on how actor momentum and diversity in the cast might make or break a movie. Finally we’ll be shifting gears to Creative Elements and Film Characteristics, where we’ll focus on the ideal movie length, and how do languages play into the box office spell.
+In the movie business, box office success comes from understanding your genre. Our data story journey aims to offer insights for movie producers on what drives revenue within each movie category. We'll explore key factors like release timing and casting influence, focusing on specific genres.
+
+Upcoming topics include, among others, the impact of actor momentum in "Are we on a roll?" and the role of optimal movie lengths in "The Great Movie Length Roundup". We'll also dive into how cultural diversity in "Portraying Diversity" and ethnicity characteristics in "Portraying Diversity" affect earnings. This guide aims to provide clear, actionable insights for the entire film industry looking to succeed in their specific movie genres.
 
 And now...the plot thickens, and so does revenue ? – Let the data tell the tales!
 
-## Explain choice of Umbrella Genres, choice of 7 first ones etc (feature engineering etc)
+# Dividing the Movie Industry into Genres
+
+In order to best explain the impact of our various features, we decided to divide our movie dataset into different umbrella genres. We started out with the genres inherent to the CMU database, but as ending up with 311 genres was way too much, so we had to filter our data. Following that, we ended up with 12 umbrella genres, which we further reduced to 7 to simplify our analysis, as the top 7 (with respect to percentage rankings) cover more than 80% of the samples.
 
 <iframe src="plots/pie_chart.png" width="750" height="550" frameborder="0">Umbrella Genre Distribution</iframe>
 
