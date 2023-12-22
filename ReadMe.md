@@ -1,4 +1,4 @@
-# Drivers of Box Office Success Across Movie Categories
+# Navigating Through Genres: Uncovering the Key Factors Behind Box Office Revenue throughout Movie Categories
 
 The wonderful story, Navigating Through Genres: Uncovering the Key Factors Behind Box Office Revenue throughout Movie Categories, can be found [here](https://alexander-schaller.github.io/ada-2023-project-topfive/data-story/).
 
@@ -14,11 +14,10 @@ After discussing several approaches to tackle our data story, we identified the 
 - Does the number of languages a movie is translated into correlate with its box office success? Should one expand its audience reach?
 - How does an actor's popularity and its typecasting influence revenues in their respective genres?
 - Does a film's financial performance benefit from having a diverse cast in terms of ethnicity and gender? 
-- What impact do the length and sentiment of a movie's title have on its box office earnings?
 - Does the timing of a movie's release amid periods of economic downturn (high unemployment) affect its box office earnings?
 - How do overlapping release dates within a single genre affect the box office returns of movies?
 
-## Proposed Additional Datasets (if any)
+## Used Datasets
 - [**IMDb Dataset**](https://datasets.imdbws.com): Data on movie ratings and the number of votes from IMDb. These movie ratings will serve as an indirect measure of film criticism and audience perception. We will use it as a feature in determining movie's box office profitability. 
 - [**US BLS Data**](https://data.bls.gov/timeseries/LNS14000000): Data on unemployment rates from the US Bureau of Labor Statistics. This variable will be used as a proxy for the global economic environment, which could have a correlation with the success of movie box office returns. 
 - [**US CPI Data**](https://www.usinflationcalculator.com/inflation/consumer-price-index-and-annual-percent-changes-from-1913-to-2008/): Inflation rate data from the US Inflation Calculator will be utilized to adjust box office revenues to real terms, ensuring that the dollar values are comparable over time and reflect the actual purchasing power of the period. 
