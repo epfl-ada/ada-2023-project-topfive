@@ -104,12 +104,15 @@ def interactive_correlation_matrix(aggregated_genre_df, desired_dep_variables, i
                 ],
                 direction="down",
                 showactive=True,
-                x=0.8,
+                x=1.1,
                 y=1.25,
                 xanchor='center',
                 yanchor='top'
             )
         ],
+        xaxis_title='',
+        yaxis_title='',
+        font_size=8,
         title="Select a Genre to View its Correlation Matrix",
     )
 
@@ -147,6 +150,7 @@ def interactive_scatterplot(genre_data, var_x, var_y, desired_genres):
 
     fig.update_layout(
         title=f"Scatter plot of {var_x} vs {var_y}",
+        title_font=dict(size=18),
         xaxis_title=f"{var_x}",
         yaxis_title=f"{var_y}"
     )
@@ -316,8 +320,8 @@ def interactive_residuals_scatterplot(regression_data, dep_var, indep_var, desir
             'buttons': buttons,
             'direction': 'down',
             'showactive': True,
-            'x': 1,
-            'y': 1.2,
+            'x': 1.2,
+            'y': 0.2,
             'xanchor': 'center',
             'yanchor': 'top'
 
@@ -378,8 +382,8 @@ def interactive_average_vs_years(aggregated_genre_df, var_to_plot, year_begin, y
                 ],
                 direction="down",
                 showactive=True,
-                x=0.8,
-                y=1.25,
+                x=1,
+                y=1.15,
                 xanchor='center',
                 yanchor='top'
             )
@@ -557,11 +561,13 @@ def interactive_Histogram2dContour(regression_data, dep_var, indep_var, desired_
         updatemenus=[{
             'buttons': buttons,
             'direction': 'down',
-            'x': 1.1,
+            'x': 1,
             'xanchor': 'center',
-            'y': 1.15,
+            'y': 1,
             'yanchor': 'top'
-        }]
+        }],
+        xaxis2=dict(title=''),
+        yaxis2=dict(title='')
     )
 
     fig['layout']['annotations'] = []
