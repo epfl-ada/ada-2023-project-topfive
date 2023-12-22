@@ -37,7 +37,7 @@ def perform_regression(aggregated_genre_df, umbrella_genre, dep_var, selected_fe
               " + ".join([f"Q('{col}')" for col in genre_data.columns if col != dep_var])
                                                                     
     model = smf.ols(formula=formula, data=genre_data).fit()
-    """
+    
     dfbetas = model.get_influence().dfbetas
     outliers = np.abs(dfbetas).max(axis=1) > 1
     
@@ -45,9 +45,7 @@ def perform_regression(aggregated_genre_df, umbrella_genre, dep_var, selected_fe
     
     clean_model = smf.ols(formula=formula, data=data_without_outliers).fit()
     
-    return clean_model,data_without_outliers"""
-    
-    return model, genre_data
+    return clean_model,data_without_outliers
 
 #usage:
 # ols_model,genre_data = perform_regression_revenue(aggregated_genre_df, 'Action', dep_var)

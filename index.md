@@ -142,7 +142,9 @@ Now, filmmakers can use this information to determine how to hire their precious
 
 ## Cinematic Ladies: Unveiling Women's Impact Over the Box Office
 Let's take a joyride through the world of movies to uncover how ladies shine on screen and affect movie money! We will be diving into the history of films to see how women are portrayed and how that impacts how much cash movies make.
+
 We start our analysis by peering through the lens of time, examining the trajectory of female representation across movie genres over the years. The graphs show a gradual rise in female representation, notably gaining momentum post-1980s. However, a zigzag pattern before 1980 raises eyebrows—an anomaly we can attribute to limited movie data for those years. 
+
 What's striking in these pictures is how women are consistently fewer, usually staying below 40 percent, no matter the type of movie. Action films, especially, have barely 30 percent women. On the flip side, romantic stories often have more than 40 percent women, fitting well with what we expect from this kind of movie. These visual signs tell us that some types of movies share roles more evenly, while others lean heavily toward one gender.
 
 <iframe src="plots/gender_over_years.html" width="750" height="550" frameborder="0">Average percentage of women in movies each year</iframe>
@@ -162,7 +164,9 @@ However, one should keep in mind that even though the partial effect of female p
 
 ## Portraying Diversity: Ethnic Mosaic on the Silver Screen
 Now, we are turning our focus to another crucial aspect: the diversity of ethnicities portrayed on screen. This exploration is pivotal as it sheds light on the changing landscape of representation in movies. We'll be closely examining the evolution of ethnic diversity in films over the years and its potential influence on the box office revenue.
+
 Let's start our exploration by dissecting the evolution of ethnic diversity over the years. As we delved into the historical portrayal of ethnicities, an intriguing pattern emerged. Until the 1960s, the average number of ethnicities fluctuated around two, showcasing a relatively consistent portrayal. However, post this era, a noticeable upward trend in ethnic representation became evident, culminating in an average of around six ethnicities per movie by 2001.
+
 In 2002, there was a sudden dip in the representation of ethnicities across all genres. This downturn might signify a momentary shift in storytelling patterns, potentially influenced by socio-political changes after 9/11 attacks. Post-2002, the trend in ethnic representation exhibited fluctuations without a distinct upward trajectory. It's essential to note that our dataset concludes in 2012, limiting our ability to analyze more recent developments in ethnic portrayal, where the situation could have taken a whole new turn.
 
 <iframe src="plots/ethnicity_over_years.html" width="750" height="550" frameborder="0">Average number of Ethnicities over the years</iframe>
@@ -212,3 +216,7 @@ Of course, pinpointing the exact cause or causes behind this phenomenon is chall
 
 
 # Conclusion
+
+In the movie world, there's no one-size-fits-all secret for success, but some key ingredients can spice up a film's box office appeal across genres. Diversity is the name of the game – having a mix of cultures and languages in a film often leads to bigger earnings. Casting is like making a perfect mix – you need a blend of seasoned veterans and rising stars. 
+
+Timing is everything; releasing movies in the summer can be a blockbuster move, as it’s a season that consistently attracts crowds. Also, launching films during times of full employment can boost ticket sales, as people have more cash to spend on entertainment. While these are the general trends depictable throughout our various methods, remember, every genre has its own secret sauce. To really hit the jackpot, it's all about mastering the art of flexibility and adaptation towards your genre in the ever-evolving global cinema landscape!
