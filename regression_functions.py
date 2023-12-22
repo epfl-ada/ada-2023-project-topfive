@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.preprocessing import MinMaxScaler
 import plotly.graph_objs as go
+import plotly.express as px
 import scipy.stats as stats
 
 def perform_regression(aggregated_genre_df, umbrella_genre, dep_var, selected_features):

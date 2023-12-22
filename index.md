@@ -9,6 +9,7 @@ title: "Home"
 # Abstract
 From fast-paced action to heart-touching romances, each genre has its own recipe for success. With over 2,000 movies produced annually worldwide, what sets each genre apart in the race for box office glory? Let's explore the unique secrets behind the success of different movie genres! Dive into our data journey where numbers meet narratives, uncovering trends and patterns that define cinematic triumphs. Join us to uncover what really makes audiences flock to theaters and cash out!
 
+
 # Introduction
 We will be taking a dive in the backstage of the film industry's greatest hits through the lenses of their ratings and revenue! We will kick off with the spotlight on Release Strategies and Timing where we'll break down the effects of premiere timing, seasonality and overlapping release dates. Next on the reel, we'll be diving into Economic Factors and Box Office Resilience, where we'll explore how movies navigate the economic rollercoaster. Then, it'll be a tour into Casting and Star Power, where we’ll spill the beans on how actor momentum and diversity in the cast might make or break a movie. Finally we’ll be shifting gears to Creative Elements and Film Characteristics, where we’ll focus on the ideal movie length, and how do languages play into the box office spell.
 
@@ -40,16 +41,17 @@ Last but certainly not least, we must also consider the impact of influential ob
 If, for a specific observation, the regression coefficient exhibits a movement exceeding 1 standard deviation (in either direction, hence considering the absolute value), that observation is deemed highly influential. In such cases, we make the decision to treat it as an outlier and remove it from the training dataset. This proactive step helps ensure that potential sources of noise in our estimation are minimized.
 
 ## Comments about correlation matrices
-LOREM IPSUM
 
-### Insert both matrices, comment on fact that correlations are quite similar -> use box office (mostly?)
 <iframe src="plots/correlation_matrix_revenue.html" width="750" height="550" frameborder="0">Correlation Matrix for Adj Revenue by Umbrella Genre</iframe>
 
 <iframe src="plots/correlation_matrix_rating.html" width="750" height="550" frameborder="0">Correlation Matrix for Average Review by Umbrella Genre</iframe>
 
+Looking at the correlation matrices for different relationships and different genres, we can see that in a large majority of cases, the correlations between dependent variables and our two independent variable candidates are not that different. For this reason, we decided to proceed with our original analysis and keep the logarithmic inflation adjusted box office as our main success factor.
+
+
 # Release Strategies and Timing
 
-## Premiere Party: Timing is Everything, Darling! (ADD PLOTS)
+## Premiere Party: Timing is Everything, Darling!
 Choosing the right premiere date is like matchmaking for movies. We're exploring the release dates, their link to the success metrics namely movie ratings and box office revenue.
 
 <iframe src="plots/aggregate_avg_revenue_movie.png" width="750" height="550" frameborder="0">Aggregate Average Revenue of Movies</iframe>
@@ -58,7 +60,7 @@ As we inspect the data spotlight  it revealed key insights. July, the summer blo
 
 The release calendar, shows September and December as the prime blockbuster battlegrounds, while February and July take a nap with the fewest releases. The variation in quantity is significant a 1.5-fold contrast in the number of movies released during high compared to low-release periods.
 
-## Release Rumble: When Movies Go on Awkward First Dates (ADD PLOTS)
+## Release Rumble: When Movies Go on Awkward First Dates
 Ever seen two movies awkwardly run into each other at the release calendar? We're investigating the impact of  colliding release dates. 
 
 <iframe src="plots/aggregate_distribution_movies.png" width="750" height="550" frameborder="0">Aggregate Distribution of Movies</iframe>
@@ -67,9 +69,10 @@ Putting on our audience engagement lens (number of votes), June and May steal th
 
 After taking a closer look into the average ratings, we notice homogeneity in average rating across all the months. With “top month” December's average rating being 6.66, while July, the “worst month” clocks in at 6.26. This observation begs reflection on the correlation between revenue, ratings, and the number of movies released. The plot thickens: revenue and ratings share a positively consistent bond, but the same cannot be said for the number of movies. The question of co-releasing movies unravels, revealing an insignificant and inconsistent correlation between the number of movies and both revenue and ratings. It seems the co-releasing synergy effect or cannibalization remains an enigma, leaving us to ponder the about the recipe for success. 
 
+
 # Economic Factors and Box Office Resilience
 
-## Add catchy title @Max
+## Movie Economics: Investigating the Cyclical Nature of Box Office Revenue
 US Unemployment rates have long been regarded as a relevant proxy for assessing the overall health of the world's economy. This metric, a reflection of US job market conditions, can be a powerful indicator of global economic well-being. When unemployment rates are low, it often signals a robust job market, increased consumer confidence, and a greater willingness to spend on various goods and services. Conversely, rising unemployment rates may indicate economic challenges, such as reduced consumer spending and business uncertainty.
 
 In the context of the movie industry, our research aims to utilize unemployment rates as a proxy for the macroeconomic environment. We intend to investigate whether there exists a discernible pattern across different movie genres that could potentially shed light on whether the movie industry operates as a cyclical business, or not. Specifically, we want to analyze whether fluctuations in unemployment rates coincide with shifts in box office performance for various movie genres.
@@ -83,6 +86,7 @@ These uniformly non-significant results across all genres except for drama, whic
 <iframe src="plots/h2c_unemployment_log_revenue.html" width="750" height="550" frameborder="0">Joint plot with histograms, Unemployment vs logarithmic Revenue</iframe>
 
 Now, we observe that revenue optimization typically occurs during periods of economic stability. This suggests that the relationship is not linear but rather intricate and multifaceted. By using a bivariate graph and modal analysis, we can illustrate various cross-genre trends. Specifically, we find that box office revenues peak during periods of full employment, typically when the US unemployment rate falls within the range of 4-6\%. As a result, the most profitable economic environment tends to coincide with a full-employment cycle. Additionally, there seems to be a second mode across the revenue variable as it is visible on the histogram. 
+
 
 # Casting and Star Power
 
@@ -107,7 +111,7 @@ However, we can clearly notice that this scatterplot goes against Gauss-Markov a
 
 When taking a glimpse towards the correlation matrix above, we can notice that Actor Momentum and Inflation Adjusted Revenue have mostly very light correlation, culminating at 0.12, for Comedy. This seems to be in line with the scatterplots above, as Comedy, SF and Fantasy as well as Thriller genres have slightly more linear-looking relationships (or at least less flat ones) with the movie revenue.
 
-<iframe src="plots/scatter_popularity_log_revenue.html" width="750" height="550" frameborder="0"> Movie Revenue Scatterplot of average Actor Momentum vs Inflation adjusted revenue by Umbrella Genre</iframe>
+<iframe src="plots/scatter_popularity_log_revenue.html" width="750" height="550" frameborder="0"> Movie Revenue Scatterplot of average Actor Momentum vs logarithmic Inflation adjusted revenue by Umbrella Genre</iframe>
 
 As mentioned in the regression part, we then decided to choose the logarithm of Inflation Adjusted Revenue as our movie success metric in order to account for the scale differences and the outliers, while keeping an interpretable variable. When examining the scatterplot of the logarithmic revenue, it looks already better (w.r.t. linear regression), compared to the regular plot.
 
@@ -115,7 +119,7 @@ When plotting the residual regression to visualize the tendency within the resid
 
 <iframe src="plots/popularity_log_revenue_residual.html" width="750" height="550" frameborder="0">"Partialed out" regression of log(Inflation adjusted revenue) on Actor Momentum by Umbrella Genre</iframe>
 
-However, no matter whether we work in the linear or the logarithmic space, the regression results remain quite similar. The coefficient of Actor Momentum always has p-values above 5\%, our significance level, no matter the genre. We can thus state that at that level, Actor Momentum is not a significant factor when predicting movie revenue, at least not in the context of a linear regression.
+However, no matter whether we work in the linear or the logarithmic space, the regression results remain quite similar. The coefficient of Actor Momentum always has p-values above 5%, our significance level, no matter the genre. We can thus state that at that level, Actor Momentum is not a significant factor when predicting movie revenue, at least not in the context of a linear regression.
 
 Even when plotting the residual regression between Actor Momentum and logarithmic revenue, we do not find linear-looking data, but rather something heteroskedastic, confirming our initial interpretation of regressions. Thus, the only analysis we will conduct for this feature in our framework is graphical analysis, as said above.
 
@@ -132,49 +136,48 @@ For the majority of genres, this golden equilibrium point materializes at the th
 
 Now, filmmakers can use this information to determine how to hire their precious cast, mixing up the talent of tomorrow with the experienced professionals, in order to reach that optimal average momentum.
 
-## Catchy Title for Gender @Alp
+## Cinematic Ladies: Unveiling Women's Impact Over the Box Office
 Let's take a joyride through the world of movies to uncover how ladies shine on screen and affect movie money! We will be diving into the history of films to see how women are portrayed and how that impacts how much cash movies make.
 We start our analysis by peering through the lens of time, examining the trajectory of female representation across movie genres over the years. The graphs show a gradual rise in female representation, notably gaining momentum post-1980s. However, a zigzag pattern before 1980 raises eyebrows—an anomaly we can attribute to limited movie data for those years. 
 What's striking in these pictures is how women are consistently fewer, usually staying below 40 percent, no matter the type of movie. Action films, especially, have barely 30 percent women. On the flip side, romantic stories often have more than 40 percent women, fitting well with what we expect from this kind of movie. These visual signs tell us that some types of movies share roles more evenly, while others lean heavily toward one gender.
 
-### GENRE w FEMALE % OVER YEARS
+<iframe src="plots/gender_over_years.html" width="750" height="550" frameborder="0">Average percentage of women in movies each year</iframe>
 
 In our next exploration, we delved into understanding how the female percentage in movies influences the box office revenue across different genres. Employing linear regression and leveraging the FWL theorem, we meticulously assessed the impact of the female percentage feature on revenue within each genre.
 Our analysis unfolded through scatter plots showing the relationship between residualized revenue (adjusted for other factors) and residualized female percentage for each specific genre.
 In all genres, a consistent pattern emerged - a faint yet discernible negative trend line. This subtle downward trend shows a weak inverse relationship between the presence of women on screen and the corresponding box office revenue for each genre.
 
-### RESIDUAL REGRESSION
 <iframe src="plots/gender_log_revenue_residual.html" width="750" height="550" frameborder="0">"Partialed out" regression of log(Inflation adjusted revenue) on Actor Momentum by Umbrella Genre</iframe>
 
 In light of the initially observed weak relationship, we conducted a second analysis. Specifically, we scrutinized the data by plotting a bar graph showcasing the average revenue across different female percentage intervals. To enhance the depiction of variability, we incorporated 95% confidence intervals (CI) as error bars within the graph.
 Upon closer inspection, this refined analysis showed us a more pronounced negative effect associated with varying female representation. Notably, the disparity in average revenue becomes strikingly evident across these intervals. For instance, in the 75-100 interval, the average revenue starkly contrasts, amounting to nearly a third of that in the 0-25 interval.
 
-### BOXPLOT
+<iframe src="plots/fig_gender_barplot.html" width="750" height="550" frameborder="0">Female percentage in Movies vs Average Box Office Revenue (Adjusted)</iframe>
 
 However, one should keep in mind that even though the partial effect of female percentage over the years is slightly negative (when not zero due to it being non-significant for some genres), the historical context needs to be taken into account. In an industry mostly dominated by men historically, the presence of women in large numbers is a quite new phenomenon and with the gender difference tightening over the years, one could expect to see a change in this coefficient in the future.
 
-## Catchy Title for Ethnicities @Alp
+## Portraying Diversity: Ethnic Mosaic on the Silver Screen
 Now, we are turning our focus to another crucial aspect: the diversity of ethnicities portrayed on screen. This exploration is pivotal as it sheds light on the changing landscape of representation in movies. We'll be closely examining the evolution of ethnic diversity in films over the years and its potential influence on the box office revenue.
 Let's start our exploration by dissecting the evolution of ethnic diversity over the years. As we delved into the historical portrayal of ethnicities, an intriguing pattern emerged. Until the 1960s, the average number of ethnicities fluctuated around two, showcasing a relatively consistent portrayal. However, post this era, a noticeable upward trend in ethnic representation became evident, culminating in an average of around six ethnicities per movie by 2001.
 In 2002, there was a sudden dip in the representation of ethnicities across all genres. This downturn might signify a momentary shift in storytelling patterns, potentially influenced by socio-political changes after 9/11 attacks. Post-2002, the trend in ethnic representation exhibited fluctuations without a distinct upward trajectory. It's essential to note that our dataset concludes in 2012, limiting our ability to analyze more recent developments in ethnic portrayal, where the situation could have taken a whole new turn.
 
-### PLOT ETH OVER YEARS
+<iframe src="plots/ethnicity_over_years.html" width="750" height="550" frameborder="0">Average number of Ethnicities over the years</iframe>
 
 In our quest to explore the impact of the number of ethnicities on box office revenue, we employed the same linear regression method as we used in gender analysis. Visualizing the results through scatter plots of residualized revenue against residualized average number of ethnicities revealed a modest positive trend line. Notably, the trend exhibited its strongest correlation in action films, while appearing weaker in romantic, comedy, and drama genres.
 
-### PLOT RESIDUALS ETH
 <iframe src="plots/ethnicity_log_revenue_residual.html" width="750" height="550" frameborder="0">"Partialed out" regression of log(Inflation adjusted revenue) on Actor Momentum by Umbrella Genre</iframe>
 
 To conclude, we can see that over all genres, the impact of having more ethnicities is positive and always significant. The largest impact is made on Romance and Thriller genres, while Drama movies seem to get the least benefits from a diverse cast.
 
 Filmmakers should thus keep in mind that diversity is the key to (at least a part of) success!
 
+
 # Creative Elements and Film Characteristics
 
 ## Runtime Rodeo: The Great Movie Length Roundup
 Are you into short and sweet or epic odysseys? In this section we’ll take a look at the structural evolution of movie runtimes and  the effect of runtime of box office revenue and vice versa. 
 
-Now, let's break it down. Movies these days are probably a bit longer because of the advancement in movie production technology. As we travel through the decades, the runtime has been going up by about 4.33 $\%$ every ten years.  
+Now, let's break it down. Movies these days are probably a bit longer because of the advancement in movie production technology. As we travel through the decades, the runtime has been going up by about 4.33% every ten years.  
 
 
 <iframe src="plots/blockbusters_year.png" width="750" height="550" frameborder="0">Blockbusters and median revenue per year</iframe>
@@ -187,20 +190,21 @@ Last but not least, let's have a look at the distribution between movie length d
 
 <iframe src="plots/h2c_runtime_log_revenue.html" width="750" height="550" frameborder="0">Joint plot with histograms, Runtime vs logarithmic Revenue</iframe>
 
-## Find catchy Languages Title @Max
 
-### insert boxplots with CIs
-
-
-## Sample Plot
-<iframe src="plots/scatter_popularity_log_revenue.html" width="750" height="550" frameborder="0"> Movie Revenue Scatterplot of average Actor Popularity vs log(Inflation adjusted revenue) by Umbrella Genre</iframe>
-
-## Actor Popularity and Movie Revenue
-
-Text
+## Lost in Translation: Multilingual Movies and Theater Proceeds
 
 
+In a globalized film industry, the impact of language diversity on box office revenues presents itself as a captivating enigma. Our investigation delves into the intriguing question of whether a film's multilingual approach influences its financial performance at the theater doors. Join us as we explore the dynamics of linguistic diversity in the world of cinema and its correlation with box office proceeds.
 
-## Last Test Graph (interactive)
+As is customary in our storytelling journey, we are deeply interested in understanding the behavior and making comparisons across different movie genres. In contrast to many other questions we aim to answer through this data exploration, this particular inquiry reveals notable variations among various movie categories.
 
-<iframe src="plots/unemployment_log_revenue_residual.html" width="750" height="550" frameborder="0"> Movie Revenue Scatterplot of average Actor Popularity vs Inflation adjusted revenue by Umbrella Genre</iframe>
+To address this question, we employ a box plot analysis that showcases the means and their 95\% confidence intervals. This method offers a concise and visually intuitive framework for interpreting box office revenues concerning movies translated into a specific number of languages in addition to the original version (which is included in the count). A second, and more statistically rigorous measure is the 'partialled out' regression coefficient, which is equivalent to the corresponding coefficient of the multivariate regression of box office revenues on the languages variable across all genres. In all genres except 'romantic,' this coefficient is both statistically significant and positive. This finding provides a robust foundation for our upcoming, somewhat qualitative analysis.
+
+<iframe src="plots/boxplot_language_log_revenue.html" width="750" height="550" frameborder="0"> Box plot of Number of languages vs log(Inflation adjusted revenue) by Umbrella Genre</iframe>
+
+Upon examining the box plots, a similar trend emerges for the drama and niche genres. Both genres exhibit an increase in average revenue as the number of languages rises, particularly between the 1 and 4 language marks. Visually, we observe that the confidence intervals for, say, the case with only 1 language and the case with 4 languages do not overlap. While this is not a formal hypothesis testing procedure, it provides a visual representation of a pattern within these movie categories, a pattern that is less pronounced or even absent in other genres.
+
+Of course, pinpointing the exact cause or causes behind this phenomenon is challenging, and statistical validation is even more complex. However, for interpretative purposes, we might intuitively consider that the drama genre places a higher demand on viewers in terms of plot comprehension and understanding of dialogue. In such cases, successful movies may choose to offer a broader range of languages to accommodate varying audience needs. This can be contrasted with genres where translation is not integral to the plot, as is often the case in action or sci-fi films, or genres where translation involves intricate and substantial changes to scenes and plot, such as comedy movies reliant on local idioms and language-specific expressions.
+
+
+# Conclusion
