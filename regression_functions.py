@@ -518,3 +518,113 @@ def interactive_barplot_average_revenue(regression_data, var_to_plot, intervals,
 
     return fig
 # Example usage: rf.interactive_barplot_average_revenue(regression_df_revenue, 'Female Percentage', [0, 25, 50, 75, 100], desired_categories)
+
+def interactive_Histogram2dContour(regression_data, dep_var, indep_var, desired_genres):
+    """
+    Creates an interactive graph with dropdown buttons to switch between genres.
+
+    Parameters:
+    regression_data (DataFrame): The data containing the variables and genres.
+    dep_var (str): The name of the dependent variable column.
+    indep_var (str): The name of the independent variable column.
+    desired_genres (list of str): A list of genres to filter the data and create plots for.
+    """
+
+    # Initialize figure with subplots
+    fig = go.Figure()
+
+    # Create a subplot for each genre and its marginal histograms
+    for genre in desired_genres:
+        genre_data = regression_data[regression_data['Umbrella Genre'] == genre]
+
+        # Contour plot for the 2D density
+        fig.add_trace(go.Histogram2dContour(
+            x=genre_data[indep_var],
+            y=genre_data[dep_var],
+            colorscale='Reds',
+            name=genre,
+            showscale=False,
+            xaxis='x',
+            yaxis='y'
+        ))
+
+        # Scatter plot for the actual data points
+        fig.add_trace(go.Scatter(
+            x=genre_data[indep_var],
+            y=genre_data[dep_var],
+            mode='markers',
+            marker=dict(color='rgba(220, 0, 0, 0.8)', size=3),
+            name=genre,
+            xaxis='x',
+            yaxis='y'
+        ))
+
+        # Marginal histogram for the x-axis variable
+        fig.add_trace(go.Histogram(
+            x=genre_data[indep_var],
+            name='X marginal',
+            marker=dict(color='rgba(220, 0, 0, 0.8)'),
+            yaxis='y2'
+        ))
+
+        # Marginal histogram for the y-axis variable
+        fig.add_trace(go.Histogram(
+            y=genre_data[dep_var],
+            name='Y marginal',
+            marker=dict(color='rgba(220, 0, 0, 0.8)'),
+            xaxis='x2'
+        ))
+
+    # Update layout for initial view
+    fig.update_layout(
+        xaxis=dict(domain=[0, 0.85], title=indep_var),
+        yaxis=dict(domain=[0, 0.85], title=dep_var),
+        xaxis2=dict(domain=[0.85, 1], showticklabels=False),
+        yaxis2=dict(domain=[0.85, 1], showticklabels=False),
+        height=600,
+        width=800,
+        hovermode='closest',
+        showlegend=False,
+        bargap=0.05
+    )
+
+    # Add dropdown menu buttons
+    buttons = []
+    for i, genre in enumerate(desired_genres):
+        button = dict(
+            args=[{'visible': [False] * len(fig.data)},
+                  {'title': f'{genre} Genre: {indep_var} vs {dep_var}'}],
+            label=genre,
+            method='update'
+        )
+
+        # Set the visibility for the genre's traces
+        for j in range(len(desired_genres)):
+            if genre == desired_genres[j]:
+                for k in range(4):
+                    button['args'][0]['visible'][j * 4 + k] = True  # Toggle visibility
+
+        buttons.append(button)
+
+    # Set the first genre visible
+    for i in range(4):  # Assuming 4 traces per genre (contour, scatter, x_hist, y_hist)
+        fig.data[i].visible = True
+
+    # Set initial titles and axis titles
+    fig.update_layout(
+        title=f"{desired_genres[0]} Genre: {indep_var} vs {dep_var}",
+        updatemenus=[{
+            'buttons': buttons,
+            'direction': 'down',
+            'x': 1.1,
+            'xanchor': 'center',
+            'y': 1.15,
+            'yanchor': 'top'
+        }]
+    )
+
+    # Remove duplicate axis titles
+    fig['layout']['annotations'] = []
+
+    # Show the figure
+    fig.show()
